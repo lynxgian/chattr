@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username String
+  tag String @unique 
+  email String @unique
+  name String
+  password String
+  chats Chats[]
+  image         String?
+  friendship1 Friends[] @relation("Friendship1")
+  friendship2 Friends[] @relation("Friendship2")
+  conversations Conversations[]
+}
+
+model Chats {
+  id Int @id  @default(autoincrement())
+  conversationId String
+  text String
+  attachment String?
+  author User @relation(fields: [authorId], references: [id])
+  authorId String 
+  timestamp String 
+  conversation Conversations @relation(fields: [conversationId], references: [id])
+
+}
+
+model Conversations {
+  id String @id @default(cuid())
+  name String
+  users User[]
+  chats Chats[]
+}
+
+model Friends {
+  id String @id @default(cuid())
+  user1Id String
+  user2Id String
+
+  user1 User @relation("Friendship1", fields: [user1Id], references: [id])
+  user2 User @relation("Friendship2", fields: [user2Id], references: [id])
+  
+  status FriendshipStatus
+  
+  @@unique([user2Id])
+}
+
+enum FriendshipStatus {
+  Pending
+  Friends
+}

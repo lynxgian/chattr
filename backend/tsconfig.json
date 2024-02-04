@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "removeComments": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noImplicitAny": false,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "lib": ["ESNext"],
+        "resolveJsonModule": true
+    },
+    "include": [
+        "./src",
+        ""
+    ],
+    "exclude": [
+        "./node_modules"
+    ]
+}
