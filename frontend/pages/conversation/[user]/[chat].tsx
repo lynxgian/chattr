@@ -216,7 +216,7 @@ export default function chat({
   return (
     <>
       <div key="1" className="flex flex-col h-screen bg-gray-900">
-        <nav className="flex flex-row justify-between items-center bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-10" style={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
+        <nav className="flex flex-row justify-between items-center bg-gray-800 border-b border-gray-700 " style={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
 
           <Link href={'/'}>
             <h1 className="text-lg font-semibold text-gray-200 w-full md:w-auto">
@@ -329,12 +329,10 @@ export default function chat({
               </div>
             </div>
           </aside>
-          <section className="flex-1 border-l border-gray-700 bg-gray-900">
-            <div className="p-6 flex flex-col justify-between h-screen bg-gray-900">
-              <div
-                className="mt-6 overflow-y-auto bg-gray-900"
+          <section className="flex-1 border-t border-gray-700 sm:border-t-0 sm:border-l">
+          <div className="p-6 flex flex-col justify-between h-full overflow-y-auto">
+            <div className="mt-6 space-y-6 flex-1 overflow-y-auto max-h-[calc(8*3.5rem)] bg-gray-800"
                 style={{
-                  maxHeight: 'calc(100vh - 12rem)',
                   scrollBehavior: 'smooth',
                   flexDirection: 'column',
                 }}
@@ -419,8 +417,8 @@ export default function chat({
                   ))}
               </div>
 
-              <div className="mt-6 sticky bottom-0 bg-gray-800 p-6">
-               <form className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-3 w-full">
+              <div className="mt-6 bg-gray-800 p-6">
+              <form className="flex space-x-3">
                 <div className="relative flex-grow">
                     {attachment ? (
                       <AttachmentData
