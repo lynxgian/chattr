@@ -29,9 +29,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
              connect:  test
            }
         
+        },
+        select: {
+            id: true,
+            name: true,
+            users: true,
+            chats: true
         }
     }) 
     return res.send({
-       conversation: db.id
+       conversation: db.id,
+       name: db.name,
+       users: db.users,
+       chats: db.chats
     })
 }

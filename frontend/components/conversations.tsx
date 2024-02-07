@@ -94,7 +94,9 @@ export default function Conversations({ conversations, users, currentUser, curre
   const [isValid, setIsValid] = useState(false);
   const usernameTagRegex = /^[\w\d]+#\d{4}$/;
   const [username, setNewUsername] = useState(currentUser.username)
+  const [friends, setFriends] = useState(users)
   const [conversationName, setConversationName] = useState('')
+  const [conversation, setConversation] = useState(conversations)
   const [profilePicture, setProfilePicture] = useState<File | null>(null)
   const [newProfilePictureUrl, setNewProfilePictureUrl] = useState<string | ArrayBuffer>('')
   const [profilePictureUrl, setProfilePictureUrl] = useState(currentUser.avatar)
@@ -132,13 +134,17 @@ export default function Conversations({ conversations, users, currentUser, curre
     setNewProfilePictureUrl('')
     setProfilePicture(null)
   }
-
   const intilizeSocket = () => {
 
     socket.on("friend-request", (data) => {
       setAllFriendRequests((prev) => [...prev, data])
     })
-
+    socket.on("create-conversation", (data) => {
+      setConversation((prev) => [...prev, data])
+    })
+    socket.on("friends", (data) => {
+      setFriends((prev) => [...prev, data])
+    })
     socket.on("error", (data) => {
       console.log(data)
     })
@@ -219,12 +225,16 @@ export default function Conversations({ conversations, users, currentUser, curre
       setMessage('You have already added this user!')
       return
     }
-
+    socket.emit("friends", {
+      user1id: res.data.senderId, user2id: res.data.id, status: "Friends", user1: {
+        username: res.data.username, tag: res.data.tag, image: res.data.image, name: res.data.name
+      }
+    })
     isSent(true)
     setSuccess(true)
     setMessage('You have sucessfully added this user!')
     return socket.emit("friend-request", {
-      user1id: res.data.senderId, user2id: res.data.id, status: "Pending", user1: {
+      user1id: res.data.senderId, user2id: res.data.id, status: "Friends", user1: {
         username: res.data.username, tag: res.data.tag, image: res.data.image, name: res.data.name
       }
     })
@@ -248,6 +258,13 @@ export default function Conversations({ conversations, users, currentUser, curre
         users: selectedUsers,
         name: conversationName
       }
+    })
+    socket.emit("create-conversation", {
+      id: res.data.conversation,
+      name: res.data.name,
+      users: res.data.users,
+      chats: res.data.chats
+
     })
     router.push(`/conversation/${currentUser.id}/${res.data.conversation}`)
     setSelectedUsers([])
@@ -309,7 +326,7 @@ export default function Conversations({ conversations, users, currentUser, curre
               <Button className="bg-gray-700 text-gray-300">
                 Add Friends
                 <Badge className="ml-2" variant="secondary">
-                  {friendRequests.find(x => x.id === "") || friendRequests.map(x => x.status !== "Pending") ? 0 : friendRequests.length}
+                  {friendRequests.filter(x => x.status === "Pending").length}
                 </Badge>
               </Button>
 
@@ -408,7 +425,7 @@ export default function Conversations({ conversations, users, currentUser, curre
                 <CommandList>
                   <CommandEmpty>No friends found.</CommandEmpty>
                   <CommandGroup heading="Users">
-                    {(users.find(x => x.user1id === currentUser.id) ? users.filter(x => x.user2id !== currentUser.id) : users.filter(x => x.user1id !== currentUser.id)).map((x, key) => (
+                    {(friends.find(x => x.user1id === currentUser.id) ? users.filter(x => x.user2id !== currentUser.id) : users.filter(x => x.user1id !== currentUser.id)).map((x, key) => (
                       <CommandItem  onSelect={(e) => handleUserSelection(e)}>
                         <Checkbox onSelect={(e) => handleUserSelection(e)} id="user" />
                         <Label className="flex items-center gap-2" htmlFor="user3">
@@ -426,7 +443,7 @@ export default function Conversations({ conversations, users, currentUser, curre
                     <Label htmlFor="conversation-name">Conversation Name</Label>
                     <Input value={conversationName} onChange={(e) => setConversationName(e.target.value)} type="conversation-name" id="conversation-name" placeholder="Enter conversation name" />
                   </div>
-                  <Button disabled={!conversationName.trim() && selectedUsers.length == 0} onClick={(e) => handleCreateConversation(e)}>Create Conversation</Button>
+                  <Button disabled={!conversationName.trim() && selectedUsers.length === 1} onClick={(e) => handleCreateConversation(e)}>Create Conversation</Button>
                 </div>
               </Command>
             </DialogContent>
@@ -435,7 +452,7 @@ export default function Conversations({ conversations, users, currentUser, curre
       </header>
       <div className="overflow-y-auto max-h-auto md:max-h-auto lg:max-h-auto">
 
-        {conversations?.map((x, key) => (
+        {conversation?.map((x, key) => (
           <div className="f overflow-y-auto p-4">
             <div className="space-y-4">
               <Card className="p-4 flex items-center justify-between bg-gray-800 text-gray-100">

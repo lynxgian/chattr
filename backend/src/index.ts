@@ -1,7 +1,6 @@
 import express from 'express'
 import http from 'http'
-import fs from 'fs'
-import path from 'path'
+
 import {Server} from 'socket.io'
 const app = express()
 
@@ -18,7 +17,12 @@ io.on('connection', (socket) => {
     socket.on("friend-request", function (data) {
         io.emit("friend-request", data)
     })
-
+    socket.on("create-conversation", function (data) {
+        io.emit("create-conversation", data)
+    })
+    socket.on("friends", function (data) {
+        io.emit("friends", data)
+    })
     socket.on('error', (data) => {
         console.log(data)
     })

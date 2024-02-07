@@ -47,7 +47,7 @@ export default function Login() {
 
               <div className="py-8 text-base leading-6 space-y-4 text-gray-300 sm:text-lg sm:leading-7">
                 <div className="relative">
-                  <Label  className="leading-7 text-sm text-gray-400" htmlFor="username">
+                  <Label  className="leading-7 text-sm text-gray-400" htmlFor="email">
                     Email
                   </Label>
                   <Input onChange={(e) => setEmail(e.target.value)} className="mt-1 block w-full bg-gray-700 text-white" id="username" type="text" />
